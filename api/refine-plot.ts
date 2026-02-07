@@ -1,4 +1,4 @@
-import { refinePlot } from "../services/apiService";
+import { refinePlot } from "../services/apiService.js";
 
 export const config = { maxDuration: 60 };
 

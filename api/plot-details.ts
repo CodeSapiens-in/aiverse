@@ -1,4 +1,4 @@
-import { generatePlotDetails } from "../services/apiService";
+import { generatePlotDetails } from "../services/apiService.js";
 
 export const config = { maxDuration: 60 };
 

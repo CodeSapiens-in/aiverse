@@ -1,4 +1,4 @@
-import type { AIAdapter, GenerateContentOptions, GenerateContentResult } from "./types";
+import type { AIAdapter, GenerateContentOptions, GenerateContentResult } from "./types.js";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions";
 

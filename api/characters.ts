@@ -1,5 +1,5 @@
-import type { PlotDraft } from "../types";
-import { generateDefaultCharacters } from "../services/apiService";
+import type { PlotDraft } from "../types.js";
+import { generateDefaultCharacters } from "../services/apiService.js";
 
 export const config = { maxDuration: 60 };
 

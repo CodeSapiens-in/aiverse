@@ -1,5 +1,5 @@
-import type { Plot } from "../types";
-import { generateNextEpisode } from "../services/apiService";
+import type { Plot } from "../types.js";
+import { generateNextEpisode } from "../services/apiService.js";
 
 export const config = { maxDuration: 120 };
 

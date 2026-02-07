@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
-import type { AIAdapter, GenerateContentOptions, GenerateContentResult } from "./types";
+import type { AIAdapter, GenerateContentOptions, GenerateContentResult } from "./types.js";
 
 const apiKey = process.env.API_KEY ?? process.env.GEMINI_API_KEY ?? "";
 const ai = new GoogleGenAI({ apiKey });

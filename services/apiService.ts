@@ -1,8 +1,8 @@
 import { Type, Schema } from "@google/genai";
-import { Character, Plot, PlotDraft } from "../types";
-import type { AIAdapter } from "./adapters/types";
-import { geminiAdapter, CREATIVE_MODEL, FAST_MODEL } from "./adapters/geminiAdapter";
-import { openrouterAdapter } from "./adapters/openrouterAdapter";
+import { Character, Plot, PlotDraft } from "../types.js";
+import type { AIAdapter } from "./adapters/types.js";
+import { geminiAdapter, CREATIVE_MODEL, FAST_MODEL } from "./adapters/geminiAdapter.js";
+import { openrouterAdapter } from "./adapters/openrouterAdapter.js";
 
 // --- Adapter selection (extend by adding new adapters and env check) ---
 const PROVIDER = (process.env.AI_PROVIDER ?? process.env.VITE_AI_PROVIDER ?? "gemini").toLowerCase();
