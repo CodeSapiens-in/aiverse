@@ -10,16 +10,19 @@ View your app in AI Studio: https://ai.studio/apps/drive/1V0rn7pwslaxnFRTYfBazPP
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js
 
+1. Install dependencies: `npm install`
+2. Add your API keys to `.env` (see [.env.example](.env.example)). Keys are only used by the API server, never by the frontend.
+3. Start both the API and the app in one go:
+   ```bash
+   npm run dev:all
+   ```
+   This runs the **API server** (port 3001) and **Vite** (port 3000) together. The app proxies `/api` to the server.
 
-1. Install dependencies:
-   `npm install`
-2. Set your API keys in `.env` (see [.env.example](.env.example)). Use the **server** for AI (keys never go to the frontend):
-   - `npm run server` — starts the AI API on port 3001
-   - `npm run dev` — starts the Vite app on port 3000 (proxies `/api` to the server)
-3. Run the app:
-   `npm run dev` (in another terminal: `npm run server`)
+   **Alternatively**, use two terminals:
+   - Terminal 1: `npm run server` (API on 3001)
+   - Terminal 2: `npm run dev` (Vite on 3000)
 
 ## Deploy on Vercel
 
