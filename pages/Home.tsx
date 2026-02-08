@@ -78,57 +78,62 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-20">
-      <section className="relative overflow-hidden rounded-3xl border border-story-700 bg-story-900/40 px-8 py-16 md:px-14">
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 h-full w-full opacity-70"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-story-900/80 via-story-900/40 to-story-800/80" />
-        <div className="relative z-10 max-w-2xl space-y-6">
-          <Badge color="green">Collaborative AI Storytelling</Badge>
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white">
-            Stories that unfold themselves.
-          </h1>
-          <p className="text-lg text-gray-300 space-y-1">
-            <span className="block">Start with a plot.</span>
-            <span className="block">Introduce characters.</span>
-            <span className="block">Watch episodes unfold.</span>
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Button onClick={() => onNavigate('create')}>
-              👉 Create a Plot
-            </Button>
-            <Button variant="outline" onClick={() => onNavigate('home')}>
-              Explore Stories
-            </Button>
-          </div>
+      <section className="space-y-6">
+        <Badge color="green">Collaborative AI Storytelling</Badge>
+        <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white">
+          <span className="block">Build a world.</span>
+          <span className="block">Add characters.</span>
+          <span className="block">Stories unfold.</span>
+        </h1>
+        <p className="text-lg text-gray-300 max-w-2xl">
+          A collaborative, episodic story platform where anyone can add AI characters to a living plot.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <Button onClick={() => onNavigate('create')}>
+            👉 Create a Plot
+          </Button>
+          <Button variant="outline" onClick={() => onNavigate('home')}>
+            Explore Stories
+          </Button>
         </div>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-3">
-        <Card className="space-y-3">
+      <section className="grid md:grid-cols-3 gap-6">
+        <Card className="space-y-4">
           <div className="flex items-center gap-3 text-white">
             <Globe2 className="text-story-accent" size={22} />
-            <h3 className="text-xl font-semibold">Direct the world</h3>
+            <h3 className="text-xl font-semibold">🧠 Step 1 — Create a Plot</h3>
           </div>
-          <p className="text-sm text-gray-300">Set the genre, rules, and stakes in minutes.</p>
-          <p className="text-sm text-gray-400">📌 You shape the universe.</p>
+          <ul className="text-gray-300 text-sm space-y-2">
+            <li>Choose a genre and setting</li>
+            <li>Define the rules of the world</li>
+            <li>Start with a few characters</li>
+          </ul>
+          <p className="text-sm text-gray-400">📌 You set the universe. The AI brings it to life.</p>
         </Card>
-        <Card className="space-y-3">
+        <Card className="space-y-4">
           <div className="flex items-center gap-3 text-white">
             <Theater className="text-story-accent" size={22} />
-            <h3 className="text-xl font-semibold">Invite the cast</h3>
+            <h3 className="text-xl font-semibold">🎭 Step 2 — Add Characters</h3>
           </div>
-          <p className="text-sm text-gray-300">You or anyone can add new AI characters to steer the plot.</p>
-          <p className="text-sm text-gray-400">📌 Every character thinks for itself.</p>
+          <ul className="text-gray-300 text-sm space-y-2">
+            <li>Add your own AI character</li>
+            <li>Define personality, goals, and secrets</li>
+            <li>Characters enter the story and start interacting</li>
+          </ul>
+          <p className="text-sm text-gray-400">📌 Every character has a mind of its own.</p>
         </Card>
-        <Card className="space-y-3">
+        <Card className="space-y-4">
           <div className="flex items-center gap-3 text-white">
             <BookOpen className="text-story-accent" size={22} />
-            <h3 className="text-xl font-semibold">Episodes evolve</h3>
+            <h3 className="text-xl font-semibold">📖 Step 3 — Episodes Unfold</h3>
           </div>
-          <p className="text-sm text-gray-300">Stories update each episode as characters collide.</p>
-          <p className="text-sm text-gray-400">📌 Every arc is unique.</p>
+          <ul className="text-gray-300 text-sm space-y-2">
+            <li>AI generates episodes using all characters</li>
+            <li>New characters change the plot</li>
+            <li>The story grows day by day</li>
+          </ul>
+          <p className="text-sm text-gray-400">📌 No two stories are ever the same.</p>
         </Card>
       </section>
 
