@@ -51,9 +51,9 @@ export const openrouterAdapter: AIAdapter = {
 
     if (options?.jsonSchema) {
       requestBody.response_format = { type: "json_object" };
-      requestBody.max_tokens = 4096;
+      requestBody.max_tokens = 10000;
     }
-
+    console.log("Request body:", requestBody);
     const res = await fetchWithRetry(
       OPENROUTER_BASE,
       {
@@ -73,6 +73,11 @@ export const openrouterAdapter: AIAdapter = {
     }
 
     const data = await res.json();
+    console.log("Response from OpenRouter:", {
+      content: data?.choices?.[0]?.message?.content,
+      usage: data?.usage,
+      cost: data?.usage?.total_cost ?? data?.total_cost // OpenRouter sometimes provides cost in usage or top level
+    });
     const content =
       data?.choices?.[0]?.message?.content ??
       data?.choices?.[0]?.text ??

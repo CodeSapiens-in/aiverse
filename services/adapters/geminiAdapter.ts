@@ -70,6 +70,7 @@ export const geminiAdapter: AIAdapter = {
       : { contents: prompt };
 
     const response = await generateWithRetry(model, params);
+    console.log("Response from Gemini:", response);
     const text = (response?.text ?? "").trim();
     return { text };
   },

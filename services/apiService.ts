@@ -45,16 +45,22 @@ const characterSchema: Schema = {
       items: {
         type: Type.OBJECT,
         properties: {
-          name: { type: Type.STRING },
-          role: { type: Type.STRING },
-          traits: { type: Type.ARRAY, items: { type: Type.STRING } },
-          speakingStyle: { type: Type.STRING },
-          motivation: { type: Type.STRING },
-          secret: { type: Type.STRING },
-          relationships: { type: Type.STRING },
-          characterization: { type: Type.STRING },
+          name: { type: Type.STRING, description: "Character's full name" },
+          role: { type: Type.STRING, description: "Archetype or role (e.g. Hero, Villain, Mentor, or custom)" },
+          traits: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            description: "List of 3-5 distinct personality traits (e.g. Brave, Cunning, Loyal)"
+          },
+          speakingStyle: { type: Type.STRING, description: "How they speak (e.g. Formal, Slang, Stutter, Poetic)" },
+          secret: { type: Type.STRING, description: "A hidden secret or motivation" },
+          relationships: { type: Type.STRING, description: "Key relationships with other characters" },
+          characterization: {
+            type: Type.STRING,
+            description: "A detailed paragraph describing their personality, background, and goals. MUST NOT BE EMPTY."
+          },
         },
-        required: ["name", "role", "traits", "speakingStyle", "motivation", "characterization"],
+        required: ["name", "role", "traits", "speakingStyle", "characterization"],
       },
     },
   },
@@ -159,7 +165,12 @@ export const generateDefaultCharacters = async (draft: PlotDraft): Promise<Parti
     Plot: ${draft.plot}
     Objective: ${draft.objective}
 
-    Roles: Hero, Villain, Mentor, Sidekick, Rival, Antihero, Trickster, Narrator.
+    Roles: Suggest fitting archetypes (e.g. Hero, Villain, Mentor, Sidekick, Rival, Antihero, Trickster, Narrator, or creative custom roles).
+    
+    IMPORTANT: 
+    - You MUST provide a list of 3-5 specific 'traits' for each character.
+    - You MUST provide a detailed 'characterization' paragraph describing their personality and goals.
+    - Do NOT leave these fields empty.
   `;
 
   try {
@@ -199,7 +210,6 @@ export const generateNextEpisode = async (
       (c) => `
     Name: ${c.name} (${c.role})
     Traits: ${Array.isArray(c.traits) ? c.traits.join(", ") : c.traits}
-    Motivation: ${c.motivation}
     Speaking Style: ${c.speakingStyle}
     Context: ${c.characterization}
     ${c.secret ? `Secret: ${c.secret}` : ""}
@@ -242,21 +252,138 @@ export const generateNextEpisode = async (
     3. Advance the plot.
     4. If Ep 1, establish world.
     5. Update Story Memory.
+    6. Output MUST be valid JSON only (no markdown, no code fences, no extra text).
+    7. Output MUST strictly follow this shape and key names:
+    {
+      "episodeTitle": "string",
+      "episodeText": "string",
+      "episodeSummary": ["string", "string", "string", "string", "string"],
+      "storyMemory": "string",
+      "charactersUsed": ["Character Name 1", "Character Name 2"]
+    }
+    8. Keep "episodeSummary" as exactly 5 concise bullet-style strings.
+    9. "charactersUsed" must only contain character names that appear in this episode.
+    10. Do not include any keys other than: episodeTitle, episodeText, episodeSummary, storyMemory, charactersUsed.
   `;
 
   const parseEpisode = (raw: string) => {
-    const data = JSON.parse(raw || "{}");
-    // Normalize keys from OpenRouter/other providers (title, narrative, story_memory, recent_events)
-    const title = data.episodeTitle ?? data.title ?? "";
-    const text = data.episodeText ?? data.narrative ?? "";
-    const summary = Array.isArray(data.episodeSummary)
-      ? data.episodeSummary
-      : Array.isArray(data.recent_events)
-        ? data.recent_events
-        : [];
-    const memory = data.storyMemory ?? data.story_memory ?? "";
-    const charactersUsed = Array.isArray(data.charactersUsed) ? data.charactersUsed : [];
-    return { title, text, summary, memory, charactersUsed };
+    const knownCharacterNames = new Set(plot.characters.map((c) => c.name));
+
+    const extractJsonCandidate = (input: string): string => {
+      const trimmed = (input || "").trim();
+      if (!trimmed) return "{}";
+
+      const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+      if (fenceMatch?.[1]) return fenceMatch[1].trim();
+
+      const start = trimmed.indexOf("{");
+      const end = trimmed.lastIndexOf("}");
+      if (start >= 0 && end > start) return trimmed.slice(start, end + 1).trim();
+
+      return trimmed;
+    };
+
+    const normalizeString = (value: unknown): string =>
+      typeof value === "string" ? value.trim() : "";
+
+    const normalizeSummary = (value: unknown): string[] => {
+      if (Array.isArray(value)) {
+        return value
+          .filter((item): item is string => typeof item === "string")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+      if (typeof value === "string") {
+        return value
+          .split("\n")
+          .map((line) => line.replace(/^\s*[-*•]\s*/, "").trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
+    const normalizeCharactersUsed = (value: unknown, episodeText: string): string[] => {
+      if (Array.isArray(value)) {
+        const names = value
+          .map((item) => {
+            if (typeof item === "string") return item.trim();
+            if (item && typeof item === "object" && "name" in item && typeof (item as any).name === "string") {
+              return (item as any).name.trim();
+            }
+            return "";
+          })
+          .filter(Boolean);
+        return Array.from(new Set(names.filter((name) => knownCharacterNames.has(name))));
+      }
+
+      // Last-resort inference from episode text if model omitted the field.
+      if (episodeText) {
+        return Array.from(knownCharacterNames).filter((name) => episodeText.includes(name));
+      }
+      return [];
+    };
+
+    let parsed: any = {};
+    try {
+      parsed = JSON.parse(extractJsonCandidate(raw));
+    } catch (error) {
+      console.warn("Episode response was not valid JSON. Returning empty defaults.", error);
+      return { title: "", text: "", summary: [], memory: "", charactersUsed: [] };
+    }
+
+    const source = parsed?.result && typeof parsed.result === "object" ? parsed.result : parsed;
+    const strictTitle = normalizeString(source.episodeTitle);
+    const strictText = normalizeString(source.episodeText);
+    const strictSummary = normalizeSummary(source.episodeSummary);
+    const strictMemory = normalizeString(source.storyMemory);
+    const strictCharacters = normalizeCharactersUsed(source.charactersUsed, strictText);
+
+    const hasStrictPayload =
+      strictTitle.length > 0 &&
+      strictText.length > 0 &&
+      strictSummary.length > 0 &&
+      strictMemory.length > 0;
+
+    if (hasStrictPayload) {
+      return {
+        title: strictTitle,
+        text: strictText,
+        summary: strictSummary,
+        memory: strictMemory,
+        charactersUsed: strictCharacters,
+      };
+    }
+
+    // Narrow fallback for older payload formats.
+    const fallbackTitle = strictTitle || normalizeString(source.title) || normalizeString(parsed.title);
+    const fallbackText =
+      strictText ||
+      normalizeString(source.narrative) ||
+      normalizeString(source.content) ||
+      normalizeString(source.text) ||
+      normalizeString(source.story);
+    const fallbackSummary =
+      strictSummary.length > 0
+        ? strictSummary
+        : normalizeSummary(source.summary ?? source.recent_events ?? parsed.episodeSummary);
+    const fallbackMemory =
+      strictMemory ||
+      normalizeString(source.story_memory) ||
+      normalizeString(source.memory) ||
+      normalizeString(parsed.storyMemory) ||
+      normalizeString(parsed.memory);
+    const fallbackCharacters = normalizeCharactersUsed(
+      source.charactersUsed ?? source.characters ?? parsed.charactersUsed,
+      fallbackText
+    );
+
+    return {
+      title: fallbackTitle,
+      text: fallbackText,
+      summary: fallbackSummary,
+      memory: fallbackMemory,
+      charactersUsed: fallbackCharacters,
+    };
   };
 
   try {

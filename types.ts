@@ -1,7 +1,7 @@
 export type Genre = string;
 /** Complexity/style of language used in the story */
 export type WritingStyle = 'Novel' | 'Plain English' | 'Casual' | 'Literary' | 'South Indian English' | 'North Indian English';
-export type RoleArchetype = 'Hero' | 'Villain' | 'Mentor' | 'Sidekick' | 'Rival' | 'Antihero' | 'Trickster' | 'Narrator';
+export type RoleArchetype = string;
 export type EpisodeLength = 300 | 600 | 900 | 1000 | 1200;
 
 export interface Character {
@@ -10,7 +10,6 @@ export interface Character {
   role: RoleArchetype;
   traits: string[]; // stored as comma separated string in UI, array in logic
   speakingStyle: string;
-  motivation: string;
   secret?: string;
   relationships?: string;
   characterization: string;
