@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StoryVerse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -11,11 +14,11 @@
           extend: {
             colors: {
               story: {
-                900: '#1a1625',
-                800: '#2f2b3a',
-                700: '#46424f',
-                accent: '#8b5cf6',
-                accentHover: '#7c3aed'
+                900: '#030711',
+                800: '#0a1222',
+                700: '#162238',
+                accent: '#4cf7ff',
+                accentHover: '#88fbff'
               }
             }
           }
@@ -24,22 +27,23 @@
     </script>
     <style>
       body {
-        background-color: #0f0e17;
-        color: #fffffe;
+        margin: 0;
+        background-color: #030711;
+        color: #f5f9ff;
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 8px;
+        width: 10px;
       }
       ::-webkit-scrollbar-track {
-        background: #1a1625;
+        background: #08101f;
       }
       ::-webkit-scrollbar-thumb {
-        background: #46424f;
-        border-radius: 4px;
+        background: linear-gradient(#1b2f4f, #1c6f85);
+        border-radius: 999px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #8b5cf6;
+        background: linear-gradient(#2f4d7b, #37a2be);
       }
     </style>
   <script type="importmap">

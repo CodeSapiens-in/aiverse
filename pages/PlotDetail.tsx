@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plot, Character, RoleArchetype } from '../types';
 import { getPlot, addCharacterToPlot, addEpisodeToPlot } from '../services/storageService';
 import { generateNextEpisode } from '../services/apiClient';

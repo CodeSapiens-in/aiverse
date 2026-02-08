@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PlotDraft, Character, Genre, WritingStyle, EpisodeLength, RoleArchetype } from '../types';
 import { generateDefaultCharacters, generateNextEpisode, generatePlotDetails, refinePlot } from '../services/apiClient';
 import { savePlot, getUserId } from '../services/storageService';
@@ -347,7 +347,10 @@ export default function CreatePlot({ onNavigate }: CreatePlotProps) {
 
           <div className="mt-8 flex justify-end gap-4">
             <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-            <Button onClick={publishPlot}>
+            <Button
+              onClick={publishPlot}
+              className="border border-story-accent/45 bg-[linear-gradient(135deg,rgba(14,29,52,0.95),rgba(8,19,37,0.95))] text-story-accent shadow-[0_12px_28px_rgba(76,247,255,0.16)] hover:bg-[linear-gradient(135deg,rgba(21,40,71,0.98),rgba(10,24,45,0.98))] hover:text-white"
+            >
               <Save size={18} /> Publish & Start Story
             </Button>
           </div>
