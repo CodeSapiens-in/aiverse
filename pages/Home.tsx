@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Plot } from '../types';
 import { getPlots } from '../services/storageService';
 import { Card, Button, Badge } from '../components/UI';
@@ -10,9 +10,70 @@ interface HomeProps {
 
 export default function Home({ onNavigate }: HomeProps) {
   const [plots, setPlots] = useState<Plot[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     setPlots(getPlots());
+  }, []);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const stars = Array.from({ length: 140 }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      radius: Math.random() * 1.4 + 0.4,
+      speed: Math.random() * 0.15 + 0.05,
+      alpha: Math.random() * 0.4 + 0.3,
+    }));
+
+    const resize = () => {
+      if (!canvasRef.current) return;
+      const { clientWidth, clientHeight } = canvasRef.current.parentElement || {
+        clientWidth: window.innerWidth,
+        clientHeight: window.innerHeight,
+      };
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = clientWidth * ratio;
+      canvas.height = clientHeight * ratio;
+      canvas.style.width = `${clientWidth}px`;
+      canvas.style.height = `${clientHeight}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    let frameId = 0;
+    const animate = () => {
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      context.clearRect(0, 0, width, height);
+
+      stars.forEach(star => {
+        star.y -= star.speed / 200;
+        if (star.y < 0) {
+          star.y = 1;
+          star.x = Math.random();
+        }
+        const x = star.x * width;
+        const y = star.y * height;
+        context.beginPath();
+        context.fillStyle = `rgba(159, 122, 234, ${star.alpha})`;
+        context.arc(x, y, star.radius, 0, Math.PI * 2);
+        context.fill();
+      });
+      frameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
   return (
